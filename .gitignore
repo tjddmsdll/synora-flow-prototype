@@ -1,0 +1,4 @@
+.git/
+tools/
+*.log
+cloudflared*.txt

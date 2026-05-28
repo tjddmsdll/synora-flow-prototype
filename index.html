@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>SYNORA Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="ambient ambient-left"></div>
+      <div class="ambient ambient-right"></div>
+
+      <main class="phone-frame" aria-label="SYNORA Flow 앱 프로토타입">
+        <header class="top-bar">
+          <div>
+            <p class="eyebrow">quiet connected flow</p>
+            <h1>SYNORA Flow</h1>
+          </div>
+          <button class="icon-button" id="openSettings" aria-label="프라이버시 및 기기 설정 열기">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </header>
+
+        <section class="screen-stack">
+          <section class="screen active" data-screen="home">
+            <div class="hero-panel">
+              <div class="glass-orb">
+                <div class="glass-orb-ring"></div>
+              </div>
+              <div class="hero-copy">
+                <p class="screen-label">오늘의 연결 상태</p>
+                <h2>안경 연결됨</h2>
+                <p>
+                  주변 변화와 대화 흐름을 조용히 감지하고, 사용자가 스스로 조절할 수 있도록
+                  돕고 있어요.
+                </p>
+              </div>
+            </div>
+
+            <section class="status-grid">
+              <article class="status-card">
+                <span class="status-kicker">배터리</span>
+                <strong>78%</strong>
+                <small>예상 9시간 40분</small>
+              </article>
+              <article class="status-card">
+                <span class="status-kicker">현재 모드</span>
+                <strong>대화 흐름</strong>
+                <small>안정적 연결</small>
+              </article>
+              <article class="status-card">
+                <span class="status-kicker">햅틱 세기</span>
+                <strong>중간</strong>
+                <small>부드러운 안내</small>
+              </article>
+              <article class="status-card">
+                <span class="status-kicker">프라이버시</span>
+                <strong>보호됨</strong>
+                <small>로컬 우선 저장</small>
+              </article>
+            </section>
+
+            <section class="feature-card main-mode-card">
+              <div class="section-head">
+                <div>
+                  <p class="screen-label">메인 카드</p>
+                  <h3>현재 모드: 대화 흐름 모드</h3>
+                </div>
+                <span class="status-pill">Flow Active</span>
+              </div>
+              <p class="feature-copy">말할 타이밍과 반응 시점을 조용히 안내하고 있어요.</p>
+              <div class="pulse-wave" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </section>
+
+            <section class="quick-actions">
+              <button class="action-chip" data-target-screen="modes">모드 변경</button>
+              <button class="action-chip" data-target-screen="haptic">햅틱 세기</button>
+              <button class="action-chip" data-target-screen="rest">휴식 문구</button>
+              <button class="action-chip" id="privacyShortcut">프라이버시 모드</button>
+            </section>
+
+            <section class="feature-card summary-card">
+              <div class="section-head">
+                <div>
+                  <p class="screen-label">오늘의 신호 요약</p>
+                  <h3>오늘은 오후 시간대에 주변 자극이 조금 많았어요.</h3>
+                </div>
+              </div>
+              <p class="feature-copy">
+                감각 안정 모드를 조금 일찍 켜두면 도움이 될 수 있어요. 대화 흐름 신호는 오전
+                시간대에 가장 안정적이었어요.
+              </p>
+              <div class="summary-track">
+                <div class="summary-line summary-line-soft"></div>
+                <div class="summary-line summary-line-mid"></div>
+                <div class="summary-line summary-line-olive"></div>
+              </div>
+            </section>
+          </section>
+
+          <section class="screen" data-screen="modes">
+            <div class="screen-header">
+              <p class="screen-label">Modes</p>
+              <h2>상황에 맞는 흐름 선택</h2>
+              <p>언제든 조용하게 전환할 수 있고, 각 모드는 신호 강도를 다르게 안내합니다.</p>
+            </div>
+
+            <div class="mode-list">
+              <article class="mode-card active" data-mode="conversation">
+                <div class="mode-visual">
+                  <svg viewBox="0 0 180 80" aria-hidden="true">
+                    <path d="M5 48C28 18 50 18 73 48C96 78 118 78 141 48C153 32 164 28 175 28" />
+                  </svg>
+                </div>
+                <div class="mode-topline">
+                  <div>
+                    <h3>대화 흐름 모드</h3>
+                    <p>말할 타이밍, 반응 시점, 침묵의 흐름을 더 예측 가능하게 안내합니다.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" checked data-toggle="conversation" />
+                    <span></span>
+                  </label>
+                </div>
+                <ul class="mode-features">
+                  <li>상대의 말이 끝나는 시점 감지</li>
+                  <li>침묵이 길어지는 순간 감지</li>
+                  <li>질문하거나 확인하기 좋은 타이밍 안내</li>
+                  <li>대화 속도 변화 감지</li>
+                </ul>
+                <div class="mode-footer">
+                  <span>햅틱 미리보기</span>
+                  <div class="mini-signal">
+                    <i></i><i></i><i></i>
+                  </div>
+                </div>
+              </article>
+
+              <article class="mode-card" data-mode="sensory">
+                <div class="mode-visual">
+                  <svg viewBox="0 0 180 80" aria-hidden="true">
+                    <path d="M8 55C30 50 46 23 68 23C90 23 108 59 130 59C146 59 158 45 172 35" />
+                  </svg>
+                </div>
+                <div class="mode-topline">
+                  <div>
+                    <h3>감각 안정 모드</h3>
+                    <p>
+                      복잡한 소리와 사회적 자극이 많아지는 순간을 감지해, 감각 과부하 전에
+                      스스로 조절할 수 있도록 돕습니다.
+                    </p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" data-toggle="sensory" />
+                    <span></span>
+                  </label>
+                </div>
+                <ul class="mode-features">
+                  <li>주변 소음 변화 감지</li>
+                  <li>여러 말소리의 겹침 감지</li>
+                  <li>긴장과 피로 누적 신호 안내</li>
+                  <li>휴식 필요 순간 보조</li>
+                </ul>
+                <div class="mode-footer">
+                  <span>햅틱 미리보기</span>
+                  <div class="mini-signal soft">
+                    <i></i><i></i><i></i><i></i>
+                  </div>
+                </div>
+              </article>
+
+              <article class="mode-card" data-mode="social">
+                <div class="mode-visual">
+                  <svg viewBox="0 0 180 80" aria-hidden="true">
+                    <path d="M10 58C32 58 36 20 60 20C82 20 90 54 110 54C134 54 140 28 170 28" />
+                  </svg>
+                </div>
+                <div class="mode-topline">
+                  <div>
+                    <h3>사회 환경 적응 모드</h3>
+                    <p>
+                      표정과 목소리 변화, 분위기 변화 가능성을 조용히 감지해 낯선 사회적
+                      상황을 더 차분하게 이해하도록 돕습니다.
+                    </p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" data-toggle="social" />
+                    <span></span>
+                  </label>
+                </div>
+                <ul class="mode-features">
+                  <li>표정 변화 감지</li>
+                  <li>목소리 톤 변화 감지</li>
+                  <li>분위기 변화 가능성 인식</li>
+                  <li>반응이 필요한 상황 보조</li>
+                </ul>
+                <div class="mode-footer">
+                  <span>햅틱 미리보기</span>
+                  <div class="mini-signal olive">
+                    <i></i><i></i><i></i>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="haptic">
+            <div class="screen-header">
+              <p class="screen-label">HAPTIC</p>
+              <h2>사용자만 느끼는 신호</h2>
+              <p>모드별 리듬과 우선순위로 헷갈리지 않게 안내합니다.</p>
+            </div>
+
+            <section class="feature-card haptic-intro-card">
+              <p>
+                여러 모드가 동시에 켜져 있어도 SYNORA는 모든 신호를 한꺼번에 보내지 않습니다.
+                상황의 중요도에 따라 하나의 핵심 신호만 선택해 전달합니다.
+              </p>
+            </section>
+
+            <section class="feature-card haptic-strength-card">
+              <div class="section-head haptic-mode-head">
+                <div>
+                  <h3>진동 세기 조절</h3>
+                  <p>사용자의 민감도와 상황에 맞게 햅틱 신호의 강도를 조절할 수 있습니다.</p>
+                </div>
+                <span class="soft-badge">미세 조정</span>
+              </div>
+
+              <div class="haptic-strength-list">
+                <label class="strength-slider-block">
+                  <div class="strength-label-row">
+                    <div>
+                      <strong>전체 진동 세기</strong>
+                    </div>
+                    <span class="strength-value" data-slider-value="master">보통</span>
+                  </div>
+                  <input
+                    class="strength-slider"
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="1"
+                    value="2"
+                    data-slider="master"
+                  />
+                  <div class="strength-scale" aria-hidden="true">
+                    <span>약하게</span>
+                    <span>보통</span>
+                    <span>강하게</span>
+                  </div>
+                </label>
+
+                <label class="strength-slider-block">
+                  <div class="strength-label-row">
+                    <div>
+                      <strong>대화 흐름 모드 세기</strong>
+                      <p>짧고 또렷한 진동의 강도를 조절합니다.</p>
+                    </div>
+                    <span class="strength-value" data-slider-value="conversation">보통</span>
+                  </div>
+                  <input
+                    class="strength-slider"
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="1"
+                    value="2"
+                    data-slider="conversation"
+                  />
+                  <div class="strength-scale" aria-hidden="true">
+                    <span>약하게</span>
+                    <span>보통</span>
+                    <span>강하게</span>
+                  </div>
+                </label>
+
+                <label class="strength-slider-block">
+                  <div class="strength-label-row">
+                    <div>
+                      <strong>감각 안정 모드 세기</strong>
+                      <p>부드럽고 반복적인 진동의 강도를 조절합니다.</p>
+                    </div>
+                    <span class="strength-value" data-slider-value="sensory">보통</span>
+                  </div>
+                  <input
+                    class="strength-slider"
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="1"
+                    value="2"
+                    data-slider="sensory"
+                  />
+                  <div class="strength-scale" aria-hidden="true">
+                    <span>약하게</span>
+                    <span>보통</span>
+                    <span>강하게</span>
+                  </div>
+                </label>
+
+                <label class="strength-slider-block">
+                  <div class="strength-label-row">
+                    <div>
+                      <strong>사회 환경 적응 모드 세기</strong>
+                      <p>여운이 남는 진동의 강도를 조절합니다.</p>
+                    </div>
+                    <span class="strength-value" data-slider-value="social">보통</span>
+                  </div>
+                  <input
+                    class="strength-slider"
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="1"
+                    value="2"
+                    data-slider="social"
+                  />
+                  <div class="strength-scale" aria-hidden="true">
+                    <span>약하게</span>
+                    <span>보통</span>
+                    <span>강하게</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="strength-test-panel">
+                <div class="strength-test-visual strength-level-2" id="strengthTestVisual" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <div class="strength-test-copy">
+                  <strong id="strengthTestTitle">전체 진동 세기 · 보통</strong>
+                  <p id="testFeedback">현재 선택된 세기를 시각적으로 미리볼 수 있어요.</p>
+                </div>
+              </div>
+              <button class="primary-button" id="testHaptic">진동 테스트</button>
+            </section>
+
+            <section class="haptic-section-title">
+              <h3>모드별 진동 리듬</h3>
+              <p>모드마다 리듬과 감각이 다르게 설계되어 동시에 켜져 있어도 더 쉽게 구분할 수 있습니다.</p>
+            </section>
+
+            <section class="haptic-mode-list">
+              <article class="feature-card haptic-mode-card">
+                <div class="section-head haptic-mode-head">
+                  <div>
+                    <h3>대화 흐름 모드</h3>
+                    <p>
+                      말할 타이밍과 질문 타이밍을 빠르게 알아차릴 수 있도록 짧고 분명한
+                      진동으로 안내합니다.
+                    </p>
+                  </div>
+                  <span class="soft-badge">짧고 또렷한 진동</span>
+                </div>
+                <div class="haptic-meta-row">
+                  <span class="haptic-meta-chip">리듬 · 짧은 펄스</span>
+                  <span class="haptic-meta-chip">강도 · 중간 이상</span>
+                  <span class="haptic-meta-chip">우선 · 2순위</span>
+                </div>
+                <div class="haptic-visual haptic-visual-sharp" data-preview="conversation" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <ul class="signal-list">
+                  <li><strong>짧게 1번</strong><span>지금 반응 가능</span></li>
+                  <li><strong>짧게 2번</strong><span>질문하거나 확인 가능</span></li>
+                  <li><strong>짧게 3번</strong><span>대화 속도가 빨라짐</span></li>
+                </ul>
+                <div class="haptic-card-actions">
+                  <button class="secondary-button haptic-preview-button" data-preview-trigger="conversation">
+                    진동 미리보기
+                  </button>
+                  <p class="haptic-preview-note">짧은 펄스가 또렷하게 끊겨서 보이도록 미리보기 됩니다.</p>
+                </div>
+              </article>
+
+              <article class="feature-card haptic-mode-card">
+                <div class="section-head haptic-mode-head">
+                  <div>
+                    <h3>감각 안정 모드</h3>
+                    <p>
+                      소음, 말소리 겹침, 피로 누적처럼 감각 부담이 커지는 상황을 부드럽게
+                      반복되는 진동으로 알려줍니다.
+                    </p>
+                  </div>
+                  <span class="soft-badge">부드럽고 반복적인 진동</span>
+                </div>
+                <div class="haptic-meta-row">
+                  <span class="haptic-meta-chip">리듬 · 반복 웨이브</span>
+                  <span class="haptic-meta-chip">강도 · 낮게 시작</span>
+                  <span class="haptic-meta-chip">우선 · 1순위</span>
+                </div>
+                <div class="haptic-visual haptic-visual-wave" data-preview="sensory" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <ul class="signal-list">
+                  <li><strong>약하게 반복</strong><span>주변 자극 증가</span></li>
+                  <li><strong>약하게 빠른 반복</strong><span>여러 말소리 겹침</span></li>
+                  <li><strong>천천히 반복</strong><span>휴식 필요 가능성</span></li>
+                </ul>
+                <div class="haptic-card-actions">
+                  <button class="secondary-button haptic-preview-button" data-preview-trigger="sensory">
+                    진동 미리보기
+                  </button>
+                  <p class="haptic-preview-note">부드러운 웨이브가 반복되며 긴장을 낮추는 흐름으로 보입니다.</p>
+                </div>
+              </article>
+
+              <article class="feature-card haptic-mode-card">
+                <div class="section-head haptic-mode-head">
+                  <div>
+                    <h3>사회 환경 적응 모드</h3>
+                    <p>
+                      표정 변화, 목소리 톤 변화, 분위기 변화 가능성을 단정하지 않고 짧은
+                      진동 뒤 잔잔한 여운으로 알려줍니다.
+                    </p>
+                  </div>
+                  <span class="soft-badge">짧은 진동 뒤 약한 여운</span>
+                </div>
+                <div class="haptic-meta-row">
+                  <span class="haptic-meta-chip">리듬 · 펄스 뒤 여운</span>
+                  <span class="haptic-meta-chip">강도 · 낮고 잔잔함</span>
+                  <span class="haptic-meta-chip">우선 · 3순위</span>
+                </div>
+                <div class="haptic-visual haptic-visual-ripple" data-preview="social" aria-hidden="true">
+                  <span class="pulse-core"></span>
+                  <span class="ripple ripple-one"></span>
+                  <span class="ripple ripple-two"></span>
+                  <span class="trail"></span>
+                </div>
+                <ul class="signal-list">
+                  <li><strong>짧게 1번 + 약한 여운</strong><span>상대 반응 변화 가능성</span></li>
+                  <li><strong>짧게 2번 + 약한 여운</strong><span>말투 변화 가능성</span></li>
+                  <li><strong>부드럽게 길어지는 1번</strong><span>확인 질문 필요 가능성</span></li>
+                </ul>
+                <div class="haptic-card-actions">
+                  <button class="secondary-button haptic-preview-button" data-preview-trigger="social">
+                    진동 미리보기
+                  </button>
+                  <p class="haptic-preview-note">짧은 펄스 뒤에 잔잔한 여운이 남는 형태로 미리보기 됩니다.</p>
+                </div>
+              </article>
+            </section>
+
+            <details class="feature-card haptic-fold" open>
+              <summary>
+                <div>
+                  <h3>신호 우선순위</h3>
+                  <p>여러 신호가 동시에 감지될 경우, 사용자의 부담을 줄이기 위해 가장 중요한 신호 하나만 전달합니다.</p>
+                </div>
+              </summary>
+              <div class="priority-list">
+                <article class="priority-item">
+                  <strong>1순위 감각 안정 모드</strong>
+                  <p>과부하와 휴식 필요는 사용자의 상태와 직접 연결되기 때문에 가장 먼저 안내합니다.</p>
+                </article>
+                <article class="priority-item">
+                  <strong>2순위 대화 흐름 모드</strong>
+                  <p>대화 참여 타이밍을 놓치지 않도록 필요한 순간에 안내합니다.</p>
+                </article>
+                <article class="priority-item">
+                  <strong>3순위 사회 환경 적응 모드</strong>
+                  <p>표정과 분위기 변화는 보조 신호로 전달해 상황을 차분하게 확인할 수 있도록 돕습니다.</p>
+                </article>
+              </div>
+            </details>
+
+            <details class="feature-card haptic-fold">
+              <summary>
+                <div>
+                  <h3>조작과 알림은 다르게</h3>
+                  <p>사용자가 안경에 보내는 명령과 안경이 사용자에게 주는 알림은 서로 다른 리듬으로 구분됩니다.</p>
+                </div>
+              </summary>
+              <div class="haptic-dual-grid">
+                <article class="info-tile">
+                  <strong>사용자 조작</strong>
+                  <ul class="signal-list signal-list-compact">
+                    <li><strong>두 번 탭</strong><span>모드 전환</span></li>
+                    <li><strong>앞뒤로 쓸기</strong><span>진동 세기 조절</span></li>
+                    <li><strong>3초 길게 누르기</strong><span>휴식 요청 실행</span></li>
+                    <li><strong>5초 길게 누르기</strong><span>기능 일시 정지</span></li>
+                  </ul>
+                </article>
+                <article class="info-tile">
+                  <strong>안경의 진동 알림</strong>
+                  <ul class="signal-list signal-list-compact">
+                    <li><strong>짧고 또렷한 진동</strong><span>대화 흐름 안내</span></li>
+                    <li><strong>부드러운 반복 진동</strong><span>감각 안정 안내</span></li>
+                    <li><strong>여운이 남는 진동</strong><span>사회 환경 변화 안내</span></li>
+                  </ul>
+                </article>
+              </div>
+              <p class="editor-note">
+                길게 누르기는 사용자가 안경에게 보내는 명령이고, 반복 진동은 안경이 사용자에게
+                보내는 알림입니다.
+              </p>
+            </details>
+          </section>
+
+          <section class="screen" data-screen="rest">
+            <div class="screen-header">
+              <p class="screen-label">Rest Request</p>
+              <h2>말하기 어려운 순간을 위한 선택 문구</h2>
+              <p>
+                휴식 문구는 자동으로 전달되지 않습니다. 사용자가 직접 선택했을 때만 앱 화면에
+                표시됩니다.
+              </p>
+            </div>
+
+            <section class="phrase-list">
+              <button class="phrase-card selected" data-phrase="잠시 쉬고 싶어요.">잠시 쉬고 싶어요.</button>
+              <button class="phrase-card" data-phrase="조용한 곳으로 이동하고 싶어요.">
+                조용한 곳으로 이동하고 싶어요.
+              </button>
+              <button class="phrase-card" data-phrase="천천히 말해 주세요.">천천히 말해 주세요.</button>
+              <button class="phrase-card" data-phrase="말로 답하기 어렵지만 듣고 있어요.">
+                말로 답하기 어렵지만 듣고 있어요.
+              </button>
+              <button class="phrase-card" data-phrase="잠깐 생각할 시간이 필요해요.">
+                잠깐 생각할 시간이 필요해요.
+              </button>
+            </section>
+
+            <section class="rest-actions">
+              <button class="secondary-button" id="editPhraseButton">문구 수정</button>
+              <button class="secondary-button accent" id="addPhraseButton">맞춤 문구 추가</button>
+            </section>
+
+            <section class="phrase-editor" id="phraseEditor" hidden>
+              <div class="section-head">
+                <div>
+                  <p class="screen-label" id="phraseEditorLabel">Phrase Edit</p>
+                  <h3 id="phraseEditorTitle">선택한 문구 다듬기</h3>
+                </div>
+                <span class="status-pill mint" id="phraseEditorState">Edit</span>
+              </div>
+              <label class="phrase-input-wrap" for="phraseInput">
+                <span>문구 입력</span>
+                <textarea
+                  id="phraseInput"
+                  rows="3"
+                  maxlength="42"
+                  placeholder="편안하게 전하고 싶은 문구를 입력해 주세요."
+                ></textarea>
+              </label>
+              <p class="editor-note" id="phraseEditorHint">
+                선택한 문구를 조금 더 나에게 맞는 표현으로 바꿔볼 수 있어요.
+              </p>
+              <div class="editor-actions">
+                <button class="secondary-button" id="cancelPhraseEdit">취소</button>
+                <button class="primary-button" id="savePhraseEdit">저장</button>
+              </div>
+            </section>
+
+            <section class="display-card" id="phrasePreview">
+              <p class="screen-label">큰 화면 미리보기</p>
+              <div class="display-message">잠시 쉬고 싶어요.</div>
+            </section>
+          </section>
+
+          <section class="screen" data-screen="flow">
+            <div class="screen-header">
+              <p class="screen-label">Flow Log</p>
+              <h2>오늘의 흐름</h2>
+              <p>부담을 주지 않는 요약으로 오늘의 신호 변화를 차분하게 돌아봅니다.</p>
+            </div>
+
+            <section class="log-grid">
+              <article class="feature-card log-card">
+                <div class="section-head">
+                  <h3>오늘의 대화 흐름 신호</h3>
+                  <span class="soft-badge">안정적</span>
+                </div>
+                <div class="soft-chart">
+                  <span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <p>오전에는 말할 타이밍 안내가 부드럽게 이어졌어요.</p>
+              </article>
+
+              <article class="feature-card log-card">
+                <div class="section-head">
+                  <h3>감각 안정 신호</h3>
+                  <span class="soft-badge olive">주의</span>
+                </div>
+                <div class="soft-chart olive">
+                  <span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <p>오늘은 오후 시간대에 주변 자극이 조금 많았어요.</p>
+              </article>
+
+              <article class="feature-card log-card">
+                <div class="section-head">
+                  <h3>휴식 필요 신호</h3>
+                  <span class="soft-badge">부드러움</span>
+                </div>
+                <div class="soft-chart beige">
+                  <span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <p>짧은 정리 시간이 있었고, 이후 흐름이 다시 안정되었어요.</p>
+              </article>
+
+              <article class="feature-card log-card">
+                <div class="section-head">
+                  <h3>가장 자극이 많았던 시간대</h3>
+                  <span class="soft-badge charcoal">15:00 - 17:00</span>
+                </div>
+                <div class="time-wave">
+                  <i></i><i></i><i></i><i></i>
+                </div>
+                <p>감각 안정 모드를 일찍 켜두면 도움이 될 수 있어요.</p>
+              </article>
+            </section>
+          </section>
+        </section>
+
+        <nav class="bottom-nav" aria-label="메인 탭">
+          <button class="nav-item active" data-target-screen="home">
+            <span>Home</span>
+          </button>
+          <button class="nav-item" data-target-screen="modes">
+            <span>Modes</span>
+          </button>
+          <button class="nav-item" data-target-screen="haptic">
+            <span>Haptic</span>
+          </button>
+          <button class="nav-item" data-target-screen="rest">
+            <span>Rest</span>
+          </button>
+          <button class="nav-item" data-target-screen="flow">
+            <span>Flow Log</span>
+          </button>
+        </nav>
+
+        <aside class="settings-sheet" id="settingsSheet" aria-hidden="true">
+          <div class="sheet-backdrop" id="closeSettingsBackdrop"></div>
+          <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <div>
+                <p class="screen-label">Privacy & Device</p>
+                <h2 id="settingsTitle">프라이버시 / 기기 설정</h2>
+              </div>
+              <button class="icon-button close" id="closeSettings" aria-label="설정 닫기">×</button>
+            </div>
+
+            <section class="settings-list">
+              <article class="setting-row">
+                <div>
+                  <strong>프라이버시 모드</strong>
+                  <p>민감한 상황에서 신호만 유지하고 화면 정보는 최소화합니다.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-toggle="privacy" />
+                  <span></span>
+                </label>
+              </article>
+
+              <article class="setting-row">
+                <div>
+                  <strong>카메라 사용 권한</strong>
+                  <p>사회적 신호의 변화를 감지하기 위한 목적으로만 사용됩니다.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked />
+                  <span></span>
+                </label>
+              </article>
+
+              <article class="setting-row">
+                <div>
+                  <strong>마이크 사용 권한</strong>
+                  <p>대화 속도와 주변 소리 변화를 감지하기 위한 목적으로만 사용됩니다.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked />
+                  <span></span>
+                </label>
+              </article>
+
+              <article class="setting-row static">
+                <div>
+                  <strong>데이터 저장 방식</strong>
+                  <p>로컬 우선 저장 · 필요한 요약만 암호화 보관</p>
+                </div>
+                <span class="setting-meta">기본값</span>
+              </article>
+
+              <article class="setting-row static">
+                <div>
+                  <strong>안경 배터리</strong>
+                  <p>78% · 충전 케이스 연결 시 총 22시간</p>
+                </div>
+                <span class="setting-meta">정상</span>
+              </article>
+
+              <article class="setting-row static">
+                <div>
+                  <strong>연결 상태</strong>
+                  <p>안경 연결됨 · Bluetooth 5.3</p>
+                </div>
+                <span class="setting-meta">안정적</span>
+              </article>
+
+              <button class="primary-button muted">기기 찾기</button>
+            </section>
+
+            <p class="privacy-note">
+              카메라와 마이크는 사용자의 설정에 따라 작동하며, 사회적 신호의 변화를 감지하기
+              위한 목적으로만 사용됩니다.
+            </p>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
