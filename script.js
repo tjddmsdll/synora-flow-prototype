@@ -1,347 +1,395 @@
-const screens = [...document.querySelectorAll(".screen")];
-const navItems = [...document.querySelectorAll(".nav-item")];
-const jumpButtons = [...document.querySelectorAll("[data-target-screen]")];
-const modeToggles = [...document.querySelectorAll("[data-toggle]")];
-const sliders = [...document.querySelectorAll("[data-slider]")];
-
-const settingsSheet = document.getElementById("settingsSheet");
-const openSettingsButton = document.getElementById("openSettings");
-const closeSettingsButton = document.getElementById("closeSettings");
-const closeSettingsBackdrop = document.getElementById("closeSettingsBackdrop");
-const privacyShortcut = document.getElementById("privacyShortcut");
-const phrasePreview = document.querySelector(".display-message");
-const phraseList = document.querySelector(".phrase-list");
-const phraseEditor = document.getElementById("phraseEditor");
-const phraseEditorLabel = document.getElementById("phraseEditorLabel");
-const phraseEditorTitle = document.getElementById("phraseEditorTitle");
-const phraseEditorState = document.getElementById("phraseEditorState");
-const phraseEditorHint = document.getElementById("phraseEditorHint");
-const phraseInput = document.getElementById("phraseInput");
-const editPhraseButton = document.getElementById("editPhraseButton");
-const addPhraseButton = document.getElementById("addPhraseButton");
-const cancelPhraseEditButton = document.getElementById("cancelPhraseEdit");
-const savePhraseEditButton = document.getElementById("savePhraseEdit");
-const hapticPreviewButtons = [...document.querySelectorAll("[data-preview-trigger]")];
-const testHapticButton = document.getElementById("testHaptic");
-const testFeedback = document.getElementById("testFeedback");
-const strengthTestVisual = document.getElementById("strengthTestVisual");
-const strengthTestTitle = document.getElementById("strengthTestTitle");
-
-const strengthLabelMap = {
-  1: "약하게",
-  2: "보통",
-  3: "강하게",
-};
-
-const strengthTargetMap = {
-  master: "전체 진동 세기",
-  conversation: "대화 흐름 모드 세기",
-  sensory: "감각 안정 모드 세기",
-  social: "사회 환경 적응 모드 세기",
-};
-
 const state = {
-  activeScreen: "home",
-  privacyEnabled: true,
-  sliders: {
-    master: 2,
-    conversation: 2,
-    sensory: 2,
-    social: 2,
+  currentScreen: "home",
+  detailOrigin: "home",
+  modes: {
+    conversation: true,
+    sensory: true,
+    social: true,
+    focus: true,
   },
-  phraseEditorMode: null,
-  selectedPhraseButton: document.querySelector(".phrase-card.selected"),
-  activeStrengthTarget: "master",
+  settings: {
+    modeAlerts: true,
+    batteryAlerts: true,
+  },
+  conversation: {
+    intensity: 66,
+    sensitivity: 61,
+  },
+  sensory: {
+    intensity: 54,
+    sensitivity: 58,
+    restAlert: true,
+  },
+  social: {
+    intensity: 57,
+    sensitivity: 63,
+    noise: true,
+    crowd: true,
+  },
+  focus: {
+    color: "mint",
+    size: 16,
+    brightness: 78,
+    position: "between",
+    sensitivity: 72,
+    speed: 48,
+  },
 };
 
-function activateScreen(screenName) {
-  if (screenName === state.activeScreen) {
-    return;
+const screens = [...document.querySelectorAll(".screen")];
+const navButtons = [...document.querySelectorAll("[data-nav]")];
+const modeToggles = [...document.querySelectorAll("[data-mode-toggle]")];
+const settingToggles = [...document.querySelectorAll("[data-setting-toggle]")];
+const booleanToggles = [...document.querySelectorAll("[data-boolean-toggle]")];
+const rangeInputs = [...document.querySelectorAll('input[type="range"][data-state-group]')];
+const detailTriggers = [...document.querySelectorAll("[data-open-detail]")];
+const backButtons = [...document.querySelectorAll("[data-back]")];
+const panelToggles = [...document.querySelectorAll("[data-panel-toggle]")];
+const hapticButtons = [...document.querySelectorAll("[data-haptic-test]")];
+const actionButtons = [...document.querySelectorAll("[data-action]")];
+const colorButtons = [...document.querySelectorAll("[data-focus-color]")];
+const positionButtons = [...document.querySelectorAll("[data-focus-position]")];
+
+const toast = document.getElementById("toast");
+const focusPreview = document.getElementById("focusPreview");
+const focusSummary = document.getElementById("focusSummary");
+const miniPointPreview = document.querySelector("[data-point-mini-preview]");
+
+let toastTimer = null;
+
+function isBaseScreen(screenName) {
+  return ["home", "modes", "records", "settings"].includes(screenName);
+}
+
+function navTargetFor(screenName) {
+  if (isBaseScreen(screenName)) {
+    return screenName;
   }
 
-  state.activeScreen = screenName;
+  return isBaseScreen(state.detailOrigin) ? state.detailOrigin : "modes";
+}
+
+function showScreen(screenName) {
+  state.currentScreen = screenName;
 
   screens.forEach((screen) => {
-    screen.classList.toggle("active", screen.dataset.screen === screenName);
+    const active = screen.dataset.screen === screenName;
+    screen.classList.toggle("is-active", active);
+
+    if (active) {
+      screen.scrollTop = 0;
+    }
   });
 
-  navItems.forEach((item) => {
-    item.classList.toggle("active", item.dataset.targetScreen === screenName);
-  });
-}
-
-function openSettings() {
-  settingsSheet.classList.add("open");
-  settingsSheet.setAttribute("aria-hidden", "false");
-}
-
-function closeSettings() {
-  settingsSheet.classList.remove("open");
-  settingsSheet.setAttribute("aria-hidden", "true");
-}
-
-function selectPhrase(button) {
-  const phraseButtons = [...document.querySelectorAll(".phrase-card")];
-  phraseButtons.forEach((card) => card.classList.remove("selected"));
-  button.classList.add("selected");
-  state.selectedPhraseButton = button;
-  phrasePreview.textContent = button.dataset.phrase;
-}
-
-function bindPhraseCard(button) {
-  button.addEventListener("click", () => {
-    selectPhrase(button);
+  const navTarget = navTargetFor(screenName);
+  navButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.nav === navTarget);
   });
 }
 
-function openPhraseEditor(mode) {
-  state.phraseEditorMode = mode;
-  phraseEditor.hidden = false;
+function openDetail(mode) {
+  state.detailOrigin = state.currentScreen;
+  showScreen(`detail-${mode}`);
+}
 
-  if (mode === "edit") {
-    phraseEditorLabel.textContent = "Phrase Edit";
-    phraseEditorTitle.textContent = "선택한 문구 다듬기";
-    phraseEditorState.textContent = "Edit";
-    phraseEditorHint.textContent =
-      "선택한 문구를 조금 더 나에게 맞는 표현으로 바꿔볼 수 있어요.";
-    phraseInput.value = state.selectedPhraseButton?.dataset.phrase ?? "";
-  } else {
-    phraseEditorLabel.textContent = "Custom Phrase";
-    phraseEditorTitle.textContent = "새 맞춤 문구 추가";
-    phraseEditorState.textContent = "Add";
-    phraseEditorHint.textContent =
-      "내가 편안하게 꺼낼 수 있는 짧고 선명한 문구를 새로 추가해 보세요.";
-    phraseInput.value = "";
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("is-visible");
+
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
+  }, 1800);
+}
+
+function syncMode(mode) {
+  const enabled = state.modes[mode];
+
+  document.querySelectorAll(`[data-mode-card="${mode}"]`).forEach((element) => {
+    element.classList.toggle("is-off", !enabled);
+  });
+
+  document.querySelectorAll(`[data-mode-status="${mode}"]`).forEach((badge) => {
+    badge.textContent = enabled ? "활성" : "대기";
+  });
+
+  document.querySelectorAll(`[data-mode-toggle="${mode}"]`).forEach((toggle) => {
+    toggle.checked = enabled;
+  });
+}
+
+function updateRangeFill(input) {
+  const min = Number(input.min || 0);
+  const max = Number(input.max || 100);
+  const value = Number(input.value);
+  const percent = ((value - min) / (max - min)) * 100;
+
+  input.style.background = `linear-gradient(90deg, #56c8b2 0%, #56c8b2 ${percent}%, rgba(24, 39, 35, 0.08) ${percent}%, rgba(24, 39, 35, 0.08) 100%)`;
+}
+
+function formatValue(format, value) {
+  if (format === "pixel") {
+    return `${value}px`;
   }
 
-  phraseInput.focus();
+  if (format === "percent") {
+    return `${value}%`;
+  }
+
+  return `${value}`;
 }
 
-function closePhraseEditor() {
-  phraseEditor.hidden = true;
-  state.phraseEditorMode = null;
-  phraseInput.value = "";
-}
+function updateOutput(input) {
+  const output = document.getElementById(input.dataset.output);
 
-function createPhraseCard(phraseText) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "phrase-card";
-  button.dataset.phrase = phraseText;
-  button.textContent = phraseText;
-  bindPhraseCard(button);
-  return button;
-}
-
-function runHapticPreview(previewKey) {
-  const visual = document.querySelector(`[data-preview="${previewKey}"]`);
-  if (!visual) {
+  if (!output) {
     return;
   }
 
-  visual.classList.remove("is-previewing");
+  output.textContent = formatValue(input.dataset.format, Number(input.value));
+}
+
+function syncSettings() {
+  settingToggles.forEach((toggle) => {
+    toggle.checked = state.settings[toggle.dataset.settingToggle];
+  });
+}
+
+function syncBooleans() {
+  booleanToggles.forEach((toggle) => {
+    const group = toggle.dataset.stateGroup;
+    const key = toggle.dataset.stateKey;
+    toggle.checked = Boolean(state[group][key]);
+  });
+}
+
+function initRanges() {
+  rangeInputs.forEach((input) => {
+    const group = input.dataset.stateGroup;
+    const key = input.dataset.stateKey;
+    input.value = state[group][key];
+    updateRangeFill(input);
+    updateOutput(input);
+  });
+}
+
+function updateFocusPreview() {
+  const colors = {
+    red: { solid: "#ef6464", soft: "rgba(239, 100, 100, 0.42)", label: "빨강" },
+    mint: { solid: "#56c8b2", soft: "rgba(86, 200, 178, 0.42)", label: "민트" },
+    white: { solid: "#f5f7f7", soft: "rgba(245, 247, 247, 0.52)", label: "하양" },
+    yellow: { solid: "#f0cf64", soft: "rgba(240, 207, 100, 0.42)", label: "노랑" },
+    blue: { solid: "#6ca5f5", soft: "rgba(108, 165, 245, 0.42)", label: "파랑" },
+  };
+
+  const positions = {
+    nose: { x: "50%", y: "50%", label: "코 주변" },
+    between: { x: "50%", y: "39%", label: "눈 사이" },
+    center: { x: "50%", y: "47%", label: "정면 중앙" },
+  };
+
+  const color = colors[state.focus.color];
+  const position = positions[state.focus.position];
+  const brightness = state.focus.brightness;
+  const speed = state.focus.speed;
+  const size = state.focus.size;
+  const duration = Math.max(1.6, 6 - speed * 0.05);
+
+  focusPreview.style.setProperty("--point-color", color.solid);
+  focusPreview.style.setProperty("--point-soft", color.soft);
+  focusPreview.style.setProperty("--point-size", `${size}px`);
+  focusPreview.style.setProperty("--point-opacity", `${Math.max(0.35, brightness / 100)}`);
+  focusPreview.style.setProperty("--point-glow", `${8 + Math.round(brightness / 6)}px`);
+  focusPreview.style.setProperty("--point-x", position.x);
+  focusPreview.style.setProperty("--point-y", position.y);
+  focusPreview.style.setProperty("--point-speed", `${duration}s`);
+
+  focusSummary.textContent = `${color.label} · ${position.label}`;
+
+  colorButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.focusColor === state.focus.color);
+  });
+
+  positionButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.focusPosition === state.focus.position);
+  });
+}
+
+function playHaptic(target) {
+  const demo = document.querySelector(`[data-haptic-demo="${target}"]`);
+
+  if (demo) {
+    demo.classList.remove("is-playing");
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        demo.classList.add("is-playing");
+      });
+    });
+
+    window.setTimeout(() => {
+      demo.classList.remove("is-playing");
+    }, 2900);
+  }
+
+  if ("vibrate" in navigator) {
+    navigator.vibrate([80, 40, 110]);
+  }
+
+  showToast("햅틱 테스트를 실행했어요.");
+}
+
+function playPointTest() {
+  focusPreview.classList.remove("is-testing");
+  miniPointPreview?.classList.remove("is-testing");
+
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
-      visual.classList.add("is-previewing");
+      focusPreview.classList.add("is-testing");
     });
   });
 
   window.setTimeout(() => {
-    visual.classList.remove("is-previewing");
+    focusPreview.classList.remove("is-testing");
   }, 2200);
+
+  showToast("포인트 움직임을 테스트하고 있어요.");
 }
 
-function updateStrengthPreviewSummary() {
-  const key = state.activeStrengthTarget;
-  const level = state.sliders[key];
-  const strengthLabel = strengthLabelMap[level];
-
-  if (strengthTestVisual) {
-    strengthTestVisual.classList.remove("strength-level-1", "strength-level-2", "strength-level-3");
-    strengthTestVisual.classList.add(`strength-level-${level}`);
-  }
-
-  if (strengthTestTitle) {
-    strengthTestTitle.textContent = `${strengthTargetMap[key]} · ${strengthLabel}`;
-  }
-
-  if (testFeedback) {
-    testFeedback.textContent = `${strengthTargetMap[key]}가 ${strengthLabel} 단계로 선택되어 있어요.`;
-  }
-}
-
-function updateSliderPresentation(slider) {
-  const key = slider.dataset.slider;
-  const level = Number(slider.value);
-  const fillPercent = ((level - 1) / 2) * 100;
-  const strengthLabel = strengthLabelMap[level];
-
-  state.sliders[key] = level;
-
-  slider.style.background = `linear-gradient(90deg, rgba(128, 207, 194, 0.95) 0%, rgba(128, 207, 194, 0.95) ${fillPercent}%, rgba(168, 225, 215, 0.22) ${fillPercent}%, rgba(168, 225, 215, 0.22) 100%)`;
-
-  const valueEl = document.querySelector(`[data-slider-value="${key}"]`);
-  if (valueEl) {
-    valueEl.textContent = strengthLabel;
-  }
-
-  if (key === "master") {
-    const hapticCard = document.querySelector(".status-card:nth-child(3) strong");
-    if (hapticCard) {
-      hapticCard.textContent = strengthLabel;
-    }
-  }
-
-  updateStrengthPreviewSummary();
-}
-
-jumpButtons.forEach((button) => {
+navButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const screenName = button.dataset.targetScreen;
-    if (screenName) {
-      activateScreen(screenName);
+    showScreen(button.dataset.nav);
+  });
+});
+
+detailTriggers.forEach((trigger) => {
+  const handleOpen = () => openDetail(trigger.dataset.openDetail);
+
+  trigger.addEventListener("click", (event) => {
+    if (event.target.closest(".switch")) {
+      return;
     }
+
+    handleOpen();
+  });
+
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleOpen();
+    }
+  });
+});
+
+backButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    showScreen(state.detailOrigin || "home");
   });
 });
 
 modeToggles.forEach((toggle) => {
   toggle.addEventListener("change", () => {
-    const key = toggle.dataset.toggle;
+    const mode = toggle.dataset.modeToggle;
+    state.modes[mode] = toggle.checked;
+    syncMode(mode);
 
-    if (key === "privacy") {
-      state.privacyEnabled = toggle.checked;
-      const privacyCard = [...document.querySelectorAll(".status-card")].find((card) =>
-        card.textContent.includes("프라이버시")
-      );
+    const label = document.querySelector(`[data-mode-card="${mode}"] h3`)?.textContent || "모드";
+    showToast(`${label}가 ${toggle.checked ? "활성화" : "대기"}되었어요.`);
+  });
+});
 
-      if (privacyCard) {
-        privacyCard.querySelector("strong").textContent = toggle.checked ? "보호됨" : "열림";
-        privacyCard.querySelector("small").textContent = toggle.checked
-          ? "로컬 우선 저장"
-          : "표시 정보 확대";
-      }
+settingToggles.forEach((toggle) => {
+  toggle.addEventListener("change", () => {
+    const key = toggle.dataset.settingToggle;
+    state.settings[key] = toggle.checked;
+    syncSettings();
+    showToast("알림 설정을 업데이트했어요.");
+  });
+});
 
-      return;
-    }
+booleanToggles.forEach((toggle) => {
+  toggle.addEventListener("change", () => {
+    const group = toggle.dataset.stateGroup;
+    const key = toggle.dataset.stateKey;
+    state[group][key] = toggle.checked;
+    syncBooleans();
+    showToast("세부 옵션을 반영했어요.");
+  });
+});
 
-    const modeCard = document.querySelector(`.mode-card[data-mode="${key}"]`);
-    if (!modeCard) {
-      return;
-    }
+rangeInputs.forEach((input) => {
+  input.addEventListener("input", () => {
+    const group = input.dataset.stateGroup;
+    const key = input.dataset.stateKey;
+    state[group][key] = Number(input.value);
+    updateRangeFill(input);
+    updateOutput(input);
 
-    modeCard.classList.toggle("active", toggle.checked);
-
-    if (toggle.checked) {
-      document.querySelector(".main-mode-card h3").textContent =
-        `현재 모드: ${modeCard.querySelector("h3").textContent}`;
-      document.querySelector(".main-mode-card .feature-copy").textContent =
-        modeCard.querySelector(".mode-topline p").textContent;
-      document.querySelector(".status-card:nth-child(2) strong").textContent =
-        modeCard.querySelector("h3").textContent.replace(" 모드", "");
+    if (group === "focus") {
+      updateFocusPreview();
     }
   });
 });
 
-sliders.forEach((slider) => {
-  const key = slider.dataset.slider;
-
-  ["focus", "click"].forEach((eventName) => {
-    slider.addEventListener(eventName, () => {
-      state.activeStrengthTarget = key;
-      updateStrengthPreviewSummary();
-    });
-  });
-
-  slider.addEventListener("input", () => {
-    state.activeStrengthTarget = key;
-    updateSliderPresentation(slider);
-  });
-});
-
-sliders.forEach((slider) => {
-  updateSliderPresentation(slider);
-});
-
-[...document.querySelectorAll(".phrase-card")].forEach(bindPhraseCard);
-
-editPhraseButton.addEventListener("click", () => {
-  openPhraseEditor("edit");
-});
-
-addPhraseButton.addEventListener("click", () => {
-  openPhraseEditor("add");
-});
-
-cancelPhraseEditButton.addEventListener("click", () => {
-  closePhraseEditor();
-});
-
-savePhraseEditButton.addEventListener("click", () => {
-  const nextPhrase = phraseInput.value.trim();
-  if (!nextPhrase) {
-    phraseInput.focus();
-    return;
-  }
-
-  if (state.phraseEditorMode === "edit" && state.selectedPhraseButton) {
-    state.selectedPhraseButton.dataset.phrase = nextPhrase;
-    state.selectedPhraseButton.textContent = nextPhrase;
-    selectPhrase(state.selectedPhraseButton);
-  }
-
-  if (state.phraseEditorMode === "add") {
-    const button = createPhraseCard(nextPhrase);
-    phraseList.appendChild(button);
-    selectPhrase(button);
-  }
-
-  closePhraseEditor();
-});
-
-hapticPreviewButtons.forEach((button) => {
+panelToggles.forEach((button) => {
   button.addEventListener("click", () => {
-    runHapticPreview(button.dataset.previewTrigger);
-  });
-});
+    const panel = document.querySelector(`[data-panel="${button.dataset.panelToggle}"]`);
 
-if (testHapticButton && testFeedback) {
-  testHapticButton.addEventListener("click", () => {
-    testHapticButton.textContent = "테스트 중...";
-    updateStrengthPreviewSummary();
-    testFeedback.textContent = `${strengthTargetMap[state.activeStrengthTarget]}의 선택된 강도를 시각적으로 미리보고 있어요.`;
-    testHapticButton.disabled = true;
-
-    if (strengthTestVisual) {
-      strengthTestVisual.classList.remove("is-testing");
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          strengthTestVisual.classList.add("is-testing");
-        });
-      });
+    if (!panel) {
+      return;
     }
 
-    window.setTimeout(() => {
-      testHapticButton.textContent = "진동 테스트";
-      if (strengthTestVisual) {
-        strengthTestVisual.classList.remove("is-testing");
-      }
-      updateStrengthPreviewSummary();
-      testHapticButton.disabled = false;
-    }, 1700);
+    panel.classList.toggle("is-open");
   });
-}
-
-[openSettingsButton, privacyShortcut].forEach((button) => {
-  button.addEventListener("click", openSettings);
 });
 
-[closeSettingsButton, closeSettingsBackdrop].forEach((element) => {
-  element.addEventListener("click", closeSettings);
+hapticButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    playHaptic(button.dataset.hapticTest);
+  });
+});
+
+actionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const action = button.dataset.action;
+
+    if (action === "reconnect") {
+      showToast("연결 상태를 다시 확인했어요.");
+      return;
+    }
+
+    if (action === "point-test") {
+      if (state.currentScreen !== "detail-focus") {
+        state.detailOrigin = state.currentScreen;
+        showScreen("detail-focus");
+      }
+
+      playPointTest();
+    }
+  });
+});
+
+colorButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.focus.color = button.dataset.focusColor;
+    updateFocusPreview();
+  });
+});
+
+positionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.focus.position = button.dataset.focusPosition;
+    updateFocusPreview();
+  });
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeSettings();
-    closePhraseEditor();
+  if (event.key === "Escape" && state.currentScreen.startsWith("detail-")) {
+    showScreen(state.detailOrigin || "home");
   }
 });
+
+["conversation", "sensory", "social", "focus"].forEach(syncMode);
+syncSettings();
+syncBooleans();
+initRanges();
+updateFocusPreview();
